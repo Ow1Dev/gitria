@@ -19,9 +19,16 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             aspire.packages.${system}.aspire-cli  # Use from aspire flake, not nixpkgs
+            dotnet-sdk_10
+            openssl
+
             go
             gopls          # Go language server (optional but recommended)
             go-tools       # Additional tools like staticcheck
+
+            pnpm
+            nodejs_24
+            typescript-language-server
           ];
         };
       });
