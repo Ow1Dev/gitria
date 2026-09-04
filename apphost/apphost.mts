@@ -8,7 +8,7 @@ var gitRepo = await builder.addGoApp('git-repo', '../services/git-repo', {
 
 await builder.addGoApp('gateway', '../services/gateway', {
   packagePath: './cmd/gateway',
-}).withHttpEndpoint({env: 'PORT'})
+}).withHttpEndpoint({port: 8080, env: 'PORT'})
   .withReference(gitRepo) // keeps dependency ordering
   .withEnvironment(
     'GIT_REPO_GRPC',
