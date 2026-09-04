@@ -10,6 +10,7 @@
     "https": {
       "applicationUrl": "https://localhost:17155;http://localhost:15205",
       "environmentVariables": {
+        "DASHBOARD__APPLICATIONNAME": "Gitria",
         "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:21066",
         "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22160"
       }
