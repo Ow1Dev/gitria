@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"fmt"
+
 	v0 "github.com/Ow1Dev/gitria.git/gen/git/v0"
 )
 
@@ -10,9 +12,9 @@ type Server struct {
 }
 
 // CreateRepository implements [v0.GitServiceServer].
-func (s *Server) CreateRepository(context.Context, *v0.CreateRepositoryRequest) (*v0.Repository, error) {
+func (s *Server) CreateRepository(_ context.Context, req *v0.CreateRepositoryRequest) (*v0.Repository, error) {
 	return &v0.Repository{
-		Path: "ow1/gitria",
+		Path: fmt.Sprintf("%s/%s", req.Owner, req.Name),
 	}, nil
 }
 
