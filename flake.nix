@@ -26,6 +26,10 @@
             gopls          # Go language server (optional but recommended)
             go-tools       # Additional tools like staticcheck
 
+            protobuf
+            protoc-gen-go
+            protoc-gen-go-grpc
+
             pnpm
             nodejs_24
             typescript-language-server

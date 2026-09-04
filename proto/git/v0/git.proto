@@ -1,0 +1,17 @@
+syntax = "proto3";
+package gitservice;
+
+option go_package = "github.com/Ow1Dev/gitria/gen/git/v0";
+
+service GitService {
+  rpc CreateRepository(CreateRepositoryRequest) returns (Repository);
+}
+
+message CreateRepositoryRequest {
+  string name = 1;
+  string owner = 2;
+}
+
+message Repository {
+  string path = 1;
+}
