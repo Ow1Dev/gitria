@@ -1,0 +1,22 @@
+{
+  "appHost": {
+    "path": "apphost.mts",
+    "language": "typescript/nodejs"
+  },
+  "sdk": {
+    "version": "13.4.6"
+  },
+  "profiles": {
+    "https": {
+      "applicationUrl": "https://localhost:17155;http://localhost:15205",
+      "environmentVariables": {
+        "DASHBOARD__APPLICATIONNAME": "Gitria",
+        "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:21066",
+        "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22160"
+      }
+    }
+  },
+  "packages": {
+    "Aspire.Hosting.Go": "13.4.6-preview.1.26319.6"
+  }
+}
