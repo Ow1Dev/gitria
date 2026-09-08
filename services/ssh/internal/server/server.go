@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"os"
 	"sync"
@@ -39,7 +40,7 @@ func New(cfg config.Config, logger *zerolog.Logger) (*Server, error) {
 
 	config.AddHostKey(private)
 	return &Server{
-		address:   cfg.ListenAddress,
+		address:   fmt.Sprintf(":%s", cfg.PORT),
 		sshConfig: config,
 		logger: 	logger,
 

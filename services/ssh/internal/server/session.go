@@ -27,7 +27,7 @@ func handleSession( channel ssh.Channel, requests <-chan *ssh.Request, logger *z
 	
 }
 
-func handleExec(channel ssh.Channel, req *ssh.Request, logger *zerolog.Logger) {
+func handleExec(_ ssh.Channel, req *ssh.Request, logger *zerolog.Logger) {
 	var payload struct {
 		Command string
 	}
