@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/Ow1Dev/gitria-git/internal/config"
+	"github.com/Ow1Dev/gitria-git/internal/git"
 	"github.com/Ow1Dev/gitria-git/internal/ssh"
 	"github.com/rs/zerolog"
 )
@@ -40,7 +41,9 @@ func run(
 	}
 	logger := zerolog.New(writer).With().Timestamp().Logger()
 
-	srv, err := server.New(cfg.Ssh, &logger)
+	gitsrv := git.New()
+
+	srv, err := server.New(cfg.Ssh, gitsrv, &logger)
 	if err != nil {
 		return fmt.Errorf("server: %w", err)
 	}

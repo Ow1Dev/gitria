@@ -38,7 +38,7 @@ func (s *Server) serveConnection(conn net.Conn) {
 		}
 
 		wg.Go(func() {
-			handleSession(channel, requests, s.logger)
+			handleSession(channel, requests, s.git, s.logger)
 		})
 	}
 

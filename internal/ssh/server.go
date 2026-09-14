@@ -19,11 +19,13 @@ type Server struct {
 	logger 		*zerolog.Logger
 	listener  net.Listener 
 
+	git GitService
+
 	mu    sync.Mutex
 	conns map[net.Conn]struct{}
 }
 
-func New(cfg config.SSHConfig, logger *zerolog.Logger) (*Server, error) {
+func New(cfg config.SSHConfig, git GitService, logger *zerolog.Logger) (*Server, error) {
 	privateBytes, err := os.ReadFile(cfg.HostKeyPath)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to load private key")
@@ -43,6 +45,7 @@ func New(cfg config.SSHConfig, logger *zerolog.Logger) (*Server, error) {
 		address:   fmt.Sprintf(":%s", cfg.PORT),
 		sshConfig: config,
 		logger: 	logger,
+		git: git,
 
 		conns:   make(map[net.Conn]struct{}),
 	}, nil
