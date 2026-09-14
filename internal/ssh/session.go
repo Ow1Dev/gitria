@@ -66,6 +66,14 @@ func handleExec(channel ssh.Channel, req *ssh.Request, git GitService, logger *z
         // Handle clone/fetch
 				err = git.UploadPack(repo, channel)
 
+    case "git-receive-pack":
+        // Handle push 
+				err = git.ReceivePack(repo, channel)
+
+    case "git-upload-archive":
+        // Handle archive 
+				err = git.UploadArchive(repo, channel)
+
 		default: 
     		logger.Warn().
             Str("command", cmd).
