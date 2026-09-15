@@ -92,7 +92,6 @@ func (s *Server) ListenAndServe() error {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	<-ctx.Done()
 	err := s.listener.Close()
 	if err != nil {
 		return err

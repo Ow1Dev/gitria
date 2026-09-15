@@ -81,12 +81,15 @@ func run(
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	logger.Info().Msg("shutting http")
 	if err := httpsrv.Shutdown(shutdownCtx); err != nil {
 		logger.Error().Err(err).Msg("graceful shutdown failed")
 		if err := httpsrv.Close(); err != nil {
 			logger.Error().Err(err).Msg("force close error")
 		}
 	}
+
+	logger.Info().Msg("shutting ssh")
 	if err := sshsrv.Shutdown(shutdownCtx); err != nil {
 		logger.Error().Err(err).Msg("graceful shutdown failed")
 	}
