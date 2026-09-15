@@ -51,7 +51,7 @@ func New(cfg config.SSHConfig, git GitService, logger *zerolog.Logger) (*Server,
 	}, nil
 }
 
-func (s *Server) Run(ctx context.Context) error {
+func (s *Server) ListenAndServe() error {
 	listener, err := net.Listen("tcp", s.address)
 	if err != nil {
 		s.logger.Fatal().Err(err).Msg("failed to listen for connection")
@@ -59,19 +59,6 @@ func (s *Server) Run(ctx context.Context) error {
 	s.listener = listener
 
 	var wg sync.WaitGroup
-	go func() {
-		<-ctx.Done()
-		_ = listener.Close()
-
-		s.mu.Lock()
-		defer s.mu.Unlock()
-
-		for conn := range s.conns {
-			_ = conn.Close()
-		}
-	}()
-	s.logger.Info().Str("address", s.address).Msg("ssh server listening")
-
 
 	for {
 		conn, err := listener.Accept()
@@ -100,7 +87,23 @@ func (s *Server) Run(ctx context.Context) error {
 	}
 
 	wg.Wait()
-	s.logger.Info().Msg("ssh server stopped")
+
+	return nil
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	<-ctx.Done()
+	err := s.listener.Close()
+	if err != nil {
+		return err
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for conn := range s.conns {
+		_ = conn.Close()
+	}
 
 	return nil
 }
