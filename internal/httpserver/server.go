@@ -10,7 +10,12 @@ import (
 
 func NewHttpServer(logger zerolog.Logger) http.Handler {
 	mux := http.NewServeMux()
-	api := humago.New(mux, huma.DefaultConfig("gitrea", "1.00"))
+
+	config := huma.DefaultConfig("gitrea", "1.00")
+	config.DocsPath = "";
+	config.OpenAPIPath = "";
+	
+	api := humago.New(mux, config)
 
 	addRoutes(api, mux, logger)
 
