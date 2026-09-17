@@ -5,6 +5,7 @@ go 1.26.7
 require (
 	github.com/danielgtaylor/huma/v2 v2.39.1
 	github.com/mattn/go-sqlite3 v1.14.52
+	github.com/oklog/ulid/v2 v2.1.2
 	github.com/pressly/goose/v3 v3.28.0
 	github.com/rs/zerolog v1.35.1
 	golang.org/x/crypto v0.57.0

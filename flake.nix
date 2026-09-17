@@ -20,6 +20,7 @@
 
             goose
             sqlite
+            sqlc
           ];
         };
       });

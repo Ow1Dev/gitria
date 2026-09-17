@@ -15,9 +15,9 @@ import (
 	"github.com/Ow1Dev/gitria-git/internal/db"
 	"github.com/Ow1Dev/gitria-git/internal/git"
 	"github.com/Ow1Dev/gitria-git/internal/httpserver"
+	"github.com/Ow1Dev/gitria-git/internal/sqliteStore"
 	server "github.com/Ow1Dev/gitria-git/internal/ssh"
-	"github.com/Ow1Dev/gitria-git/internal/store/sqlite"
-	"github.com/Ow1Dev/gitria-git/migration"
+	"github.com/Ow1Dev/gitria-git/migrations"
 	"github.com/rs/zerolog"
 )
 
@@ -53,7 +53,6 @@ func run(
 	if err != nil {
 		return fmt.Errorf("Could not create data path: %w", err)
 	}
-	
 
 	logger.Info().Msgf("Connecting to DB") 
 	conn, err := db.Open(cfg.GetDbFilePath())
@@ -61,9 +60,8 @@ func run(
 		return fmt.Errorf("Could not connect to DB: %w", err)
 	}
 
-	migration.RunMigration(conn, logger)
-
-	_ = sqlite.NewSQLiteStore(conn)
+	migrations.RunMigration(conn, logger)
+	queries := sqliteStore.New(conn);
 
 	gitsrv, err := git.New(cfg.GetRepoFolderPath())
 	if err != nil {
@@ -75,7 +73,7 @@ func run(
 		return fmt.Errorf("server: %w", err)
 	}
 
-	handler := httpserver.NewHttpServer(logger)
+	handler := httpserver.NewHttpServer(conn, *queries, logger)
 	httpsrv := &http.Server{
 		Addr:         cfg.HTTP.Address,
 		Handler:      handler,
