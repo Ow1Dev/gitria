@@ -12,10 +12,11 @@ type gitService struct {
 	repoPath string
 }
 
-func New() gitService {
-	return gitService{
-		repoPath: "/var/lib/gitria/repo",
+func New(repoPath string) (*gitService, error) {
+	if err := os.MkdirAll(repoPath, 0755); err != nil {
+		return nil, err
 	}
+	return &gitService{repoPath}, nil
 }
 
 func (s gitService) UploadPack(repo string, channel io.ReadWriter) error {

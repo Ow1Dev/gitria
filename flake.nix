@@ -17,6 +17,9 @@
             go
             gopls
             go-tools
+
+            goose
+            sqlite
           ];
         };
       });

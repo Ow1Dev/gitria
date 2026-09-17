@@ -2,18 +2,28 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
 
 type Config struct {
-	Ssh  SSHConfig
-	HTTP HTTPConfig
+	Data      string
+	Ssh  			SSHConfig
+	HTTP 			HTTPConfig
+}
+
+func (c *Config) GetDbFilePath() string {
+	return filepath.Join(c.Data, "store.db") 
+}
+
+func (c *Config) GetRepoFolderPath() string {
+	return filepath.Join(c.Data, "repositories")  
 }
 
 type SSHConfig struct {
 	HostKeyPath string
-	PORT string
+	PORT 				string
 }
 
 type HTTPConfig struct {
@@ -24,13 +34,19 @@ type HTTPConfig struct {
 }
 
 func LoadFromEnv(getenv func(string) string) (Config, error) {
+	datapath := getenv("DATA")
+	if datapath == "" {
+		datapath = "./data"
+	}
+
 	addr := getAddr()
 	return Config{
-		SSHConfig{
+		Data:  datapath,
+		Ssh: SSHConfig{
 			PORT: 				 getenv("SSH_LISTEN_PORT"),
 			HostKeyPath:   getenv("SSH_HOST_KEY"),
 		},
-		HTTPConfig{
+		HTTP: HTTPConfig{
 			Address:      addr,
 			ReadTimeout:  getDurationEnv("READ_TIMEOUT", 15*time.Second),
 			WriteTimeout: getDurationEnv("WRITE_TIMEOUT", 15*time.Second),

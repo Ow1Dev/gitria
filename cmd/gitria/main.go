@@ -12,9 +12,12 @@ import (
 	"time"
 
 	"github.com/Ow1Dev/gitria-git/internal/config"
+	"github.com/Ow1Dev/gitria-git/internal/db"
 	"github.com/Ow1Dev/gitria-git/internal/git"
 	"github.com/Ow1Dev/gitria-git/internal/httpserver"
 	server "github.com/Ow1Dev/gitria-git/internal/ssh"
+	"github.com/Ow1Dev/gitria-git/internal/store/sqlite"
+	"github.com/Ow1Dev/gitria-git/migration"
 	"github.com/rs/zerolog"
 )
 
@@ -46,14 +49,33 @@ func run(
 	logger := zerolog.New(writer).With().Timestamp().Logger()
 	var wg sync.WaitGroup
 
-	handler := httpserver.NewHttpServer(logger)
-	gitsrv := git.New()
+	err = createDataFolder(cfg.Data, logger)
+	if err != nil {
+		return fmt.Errorf("Could not create data path: %w", err)
+	}
+	
+
+	logger.Info().Msgf("Connecting to DB") 
+	conn, err := db.Open(cfg.GetDbFilePath())
+	if err != nil {
+		return fmt.Errorf("Could not connect to DB: %w", err)
+	}
+
+	migration.RunMigration(conn, logger)
+
+	_ = sqlite.NewSQLiteStore(conn)
+
+	gitsrv, err := git.New(cfg.GetRepoFolderPath())
+	if err != nil {
+		return fmt.Errorf("Could new create git repo dir: %w", err)
+	}
 
 	sshsrv, err := server.New(cfg.Ssh, gitsrv, &logger)
 	if err != nil {
 		return fmt.Errorf("server: %w", err)
 	}
 
+	handler := httpserver.NewHttpServer(logger)
 	httpsrv := &http.Server{
 		Addr:         cfg.HTTP.Address,
 		Handler:      handler,
@@ -95,5 +117,29 @@ func run(
 	}
 
 	wg.Wait()
+	return nil
+}
+
+func createDataFolder(dataPath string, logger zerolog.Logger) error {
+	info, err := os.Stat(dataPath)
+
+	switch {
+	case err == nil && info.IsDir():
+		logger.Info().Msgf("Data directory exists: %s", dataPath)
+
+	case os.IsNotExist(err):
+		logger.Info().Msgf("Data directory does not exist, creating: %s", dataPath)
+
+	case err != nil:
+		return fmt.Errorf("could not check data path: %w", err)
+
+	default:
+		return fmt.Errorf("data path exists but is not a directory: %s", dataPath)
+	}
+
+	if err := os.MkdirAll(dataPath, 0755); err != nil {
+		return fmt.Errorf("could not create data path: %w", err)
+	}
+
 	return nil
 }
